@@ -1,4 +1,4 @@
-import { fail, type Actions } from '@sveltejs/kit';
+import { fail, type Actions, redirect } from '@sveltejs/kit';
 import { setError, superValidate } from 'sveltekit-superforms/server';
 import { z } from "zod";
 import type { PageServerLoad } from './$types';
@@ -17,7 +17,11 @@ const registerUserSchema = z.object({
     .max(64, "Password must be 64 characters or less"),
 });
 
-export const load = (async () => {
+export const load = (async (event) => {
+    const session = await event.locals.getSession();
+    if (session) {
+        throw redirect(302, "/");
+    }
     return {
         form: superValidate(registerUserSchema)
     };
