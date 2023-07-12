@@ -2,6 +2,9 @@
 	import "../app.css";
 	import { page } from "$app/stores";
 	import { Navbar, NavBrand, NavHamburger, NavUl, NavLi, Button } from "flowbite-svelte";
+	import { invalidate } from "$app/navigation";
+	import type { LayoutData } from "./$types";
+	import { onMount } from "svelte"
 
 	const navigation = [
 		{ label: "Home", href: "/" },
@@ -9,6 +12,25 @@
 		{ label: "Contacts", href: "/contacts" },
 		{ label: "Account", href: "/account" }
 	];
+
+	export let data: LayoutData;
+
+	// pull session/supabase from data
+	$: ({session, supabase} = data)
+
+	onMount(() => {
+		// subscribe to supabase auth state change
+		const {data: {subscription}} = supabase.auth.onAuthStateChange((event, _session) => {
+			// if not the same then session isn't the same, invalidate the supabase:auth id
+			// depending on supabase:auth id will trigger re-retrieving the session?
+			if(_session?.expires_at !== session?.expires_at) {
+				invalidate("supabase:auth")
+			}
+		});
+
+		// cleanup
+		return () => subscription.unsubscribe();
+	});
 </script>
 
 <svelte:head>
