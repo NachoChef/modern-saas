@@ -12,7 +12,7 @@
 		"test:unit": "vitest",
 		"lint": "prettier --plugin-search-dir . --check . && eslint .",
 		"format": "prettier --plugin-search-dir . --write .",
-		"gen:types": "pnpx supabase gen types typescript --local > src/lib/supabase-types.ts && prettier --write src/lib/supabase-types.ts"
+  		"gen:types": "pnpx supabase gen types typescript --local > src/lib/supabase-types.ts && prettier --write src/lib/supabase-types.ts"	
 	},
 	"devDependencies": {
 		"@faker-js/faker": "^7.6.0",
