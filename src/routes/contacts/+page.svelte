@@ -14,6 +14,7 @@
 	} from "flowbite-svelte";
 	import type { PageData } from "./$types";
 	import CreateContactModal from "./CreateContactModal.svelte";
+
 	export let data: PageData;
 	let createContactOpen = false;
 </script>
