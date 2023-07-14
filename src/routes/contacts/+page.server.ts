@@ -37,7 +37,6 @@ export const actions: Actions = {
     });
 
     if (createContactError) {
-      console.log(createContactError);
       return setError(createContactForm, null, "Error creating contact.");
     }
 
