@@ -1,9 +1,9 @@
-{
+module.exports = {
 	"useTabs": true,
-	"singleQuote": false,
+	"singleQuote": true,
 	"trailingComma": "none",
 	"printWidth": 100,
-	"plugins": ["prettier-plugin-svelte", "prettier-plugin-tailwindcss"],
+	"plugins": [require("prettier-plugin-svelte"), require("prettier-plugin-tailwindcss")],
 	"pluginSearchDirs": false,
 	"overrides": [
 		{
