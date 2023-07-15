@@ -3,6 +3,7 @@ import type { Session, SupabaseClient } from "@supabase/supabase-js";
 
 declare global {
 	namespace App {
+		/// <reference types-"stripe-event-types" />
 		// interface Error {}
 		interface Locals {
 			supabase: SupabaseClient<Database>;
