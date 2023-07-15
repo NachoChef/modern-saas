@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { hasReachedMaxContacts } from '$lib/server/helpers';
 	import UpgradePlanModal from './../../lib/components/UpgradePlanModal.svelte';
 	import { hasReachedMaxContacts } from '$lib/helpers.js';
 	import {
@@ -34,7 +33,7 @@
 	$: reachedMaxContacts = hasReachedMaxContacts(tier, contactsCount);
 
 	function handleContactCreate() {
-		if (hasReachedMaxContacts) {
+		if (reachedMaxContacts) {
 			upgradeModalOpen = true;
 		} else {
 			createContactOpen = true;
