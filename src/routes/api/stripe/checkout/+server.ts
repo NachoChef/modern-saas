@@ -1,4 +1,4 @@
-import { createCheckoutSession } from '$lib/server/subscriptions';
+import { createCheckoutSession, getSubscriptionTier } from '$lib/server/subscriptions';
 import { error, redirect } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 

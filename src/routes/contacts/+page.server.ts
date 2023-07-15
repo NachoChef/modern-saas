@@ -43,7 +43,7 @@ export const actions: Actions = {
       throw error(401, "Unauthorized");
     }
 
-    const { tier, count, createContactForm } = await Promise.All([
+    const [ tier, count, createContactForm ] = await Promise.all([
       getSubscriptionTier(session.user.id),
       getContactsCount(session.user.id),
       superValidate(event, createContactSchema, {
