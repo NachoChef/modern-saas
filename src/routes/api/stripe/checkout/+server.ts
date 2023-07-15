@@ -8,6 +8,12 @@ export const GET: RequestHandler = async (event) => {
     throw redirect(302, "/login");
   }
 
+  // preventing multiple subscriptions
+  const currentTier = await getSubscriptionTier(session.user.id);
+  if (currentTier !== "Free") {
+    throw redirect(302, "/account/billing");
+  }
+
   const price_id = event.url.searchParams.get("id");
   if (!price_id) {
     throw error(400, "Invalid request");
