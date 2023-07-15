@@ -5,6 +5,7 @@ import { stripe } from '$lib/server/stripe';
 import { ENV } from '$lib/server/env';
 import { deleteProductRecord, upsertProductRecord } from '$lib/server/products';
 import { deleteCustomerRecord, updateCustomerRecord } from '$lib/server/customers';
+import { insertSubscriptionRecord, updateSubscriptionRecord } from '$lib/server/subscriptions';
 
 export const POST: RequestHandler = async (event) => {
 	const stripeSignature = event.request.headers.get('stripe-signature');
@@ -32,20 +33,22 @@ export const POST: RequestHandler = async (event) => {
 			case 'product.created':
 			case 'product.updated':
 				await upsertProductRecord(stripeEvent.data.object as Stripe.Product);
+				break;
 			case 'product.deleted':
 				await deleteProductRecord(stripeEvent.data.object as Stripe.Product);
+				break;
 			case 'customer.updated':
 				await updateCustomerRecord(stripeEvent.data.object as Stripe.Customer);
+				break;
 			case 'customer.deleted':
 				await deleteCustomerRecord(stripeEvent.data.object as Stripe.Customer);
+				break;
 			case 'customer.subscription.created':
-				console.log('Customer Subscription created', stripeEvent);
+				await insertSubscriptionRecord(stripeEvent.data.object as Stripe.Subscription);
 				break;
 			case 'customer.subscription.updated':
-				console.log('Customer Subscription updated', stripeEvent);
-				break;
 			case 'customer.subscription.deleted':
-				console.log('Customer Subscription deleted', stripeEvent);
+				await updateSubscriptionRecord(stripeEvent.data.object as Stripe.Subscription);
 				break;
 			case 'customer.subscription.trial_will_end':
 				console.log('Customer Subscription trial will end', stripeEvent);
