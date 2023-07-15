@@ -4,6 +4,7 @@ import type Stripe from 'stripe';
 import { stripe } from '$lib/server/stripe';
 import { ENV } from '$lib/server/env';
 import { deleteProductRecord, upsertProductRecord } from '$lib/server/products';
+import { deleteCustomerRecord, updateCustomerRecord } from '$lib/server/customers';
 
 export const POST: RequestHandler = async (event) => {
 	const stripeSignature = event.request.headers.get('stripe-signature');
@@ -30,15 +31,13 @@ export const POST: RequestHandler = async (event) => {
 		switch (stripeEvent.type) {
 			case 'product.created':
 			case 'product.updated':
-				await upsertProductRecord(stripeEvent.data.object);
+				await upsertProductRecord(stripeEvent.data.object as Stripe.Product);
 			case 'product.deleted':
-				await deleteProductRecord(stripeEvent.data.object);
+				await deleteProductRecord(stripeEvent.data.object as Stripe.Product);
 			case 'customer.updated':
-				console.log('customer updated', stripeEvent);
-				break;
+				await updateCustomerRecord(stripeEvent.data.object as Stripe.Customer);
 			case 'customer.deleted':
-				console.log('Customer deleted', stripeEvent);
-				break;
+				await deleteCustomerRecord(stripeEvent.data.object as Stripe.Customer);
 			case 'customer.subscription.created':
 				console.log('Customer Subscription created', stripeEvent);
 				break;
