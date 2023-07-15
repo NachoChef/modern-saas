@@ -25,7 +25,7 @@ export async function deleteCustomerRecord(stripeCustomer: Stripe.Customer) {
 	}
 }
 
-export async function createCustomerRecord(user_id: string) {
+export async function getCustomerRecord(user_id: string) {
     const { data: existing_customer} = await supabaseAdmin.from('billing_customers')
         .select('*')
         .eq('user_id', user_id)
@@ -42,11 +42,17 @@ export async function createCustomerRecord(user_id: string) {
         throw userError || new Error('User not found');
     }
 
+    // test clock
+    const testClock = await stripe.testHelpers.testClocks.create({
+        frozen_time: Math.floor(Date.now() / 1000),
+    })
+
     const stripeCustomer = await stripe.customers.create({
         email: userData.user.email,
         metadata: {
             user_id: user_id
-        }
+        },
+        test_clock: testClock.id,
     })
 
     if (!stripeCustomer) {
