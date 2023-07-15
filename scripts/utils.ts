@@ -6,6 +6,8 @@ import { createClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/supabase-types';
 import type { z } from 'zod';
 import type { registerUserSchema } from '$lib/schemas';
+import { supabaseAdmin } from '$lib/server/supabase-admin';
+import {faker} from '@faker-js/faker';
 
 export async function startSupabase() {
     const port = await detect(54322);
@@ -24,15 +26,14 @@ export async function clearSupabaseData() {
     await client.query("TRUNCATE auth.users CASCADE;");
 }
 
-// get a client for doin' db stuff
-const supabase = createClient<Database>(ENV.PUBLIC_SUPABASE_URL, ENV.PUBLIC_SUPABASE_ANON_KEY);
+
 
 // make a type for the createUser function
 type CreateUser = Omit<z.infer<typeof registerUserSchema>, "passwordConfirm">;
 
 // wrap creation in a function
 export async function createUser(user: CreateUser) {
-  const { data: authData, error: authError } = await supabase.auth.signUp({
+  const { data: authData, error: authError } = await supabaseAdmin.auth.signUp({
     email: user.email,
     password: user.password,
     options: {
@@ -47,4 +48,24 @@ export async function createUser(user: CreateUser) {
     throw new Error("Error creating user");
   }
   return authData.user;
+}
+
+export async function createContact(user_id: string) {
+    const firstName = faker.name.firstName();
+    const lastName = faker.name.lastName();
+    const contact = {
+        name: `${firstName} ${lastName}`,
+        email: faker.internet.exampleEmail(firstName, lastName),
+        company: faker.company.name(),
+        phone: faker.phone.number(),
+        user_id: user_id
+    }
+
+    const { error, data} = await supabaseAdmin.from("contacts").insert(contact);
+
+    if (error) {
+        throw error;
+    }
+
+    return data;
 }
