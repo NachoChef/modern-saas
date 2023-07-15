@@ -14,6 +14,7 @@ create policy "Users can view own customer data" on billing_customers
 create table billing_products(
     id text primary key,
     name text not null,
+    active boolean not null,
     description text not null,
     metadata jsonb
 );

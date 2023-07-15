@@ -8,6 +8,8 @@ import type { z } from 'zod';
 import type { registerUserSchema } from '$lib/schemas';
 import { supabaseAdmin } from '$lib/server/supabase-admin';
 import {faker} from '@faker-js/faker';
+import { stripe } from '$lib/server/stripe';
+import { upsertProductRecord } from '$lib/server/products';
 
 export async function startSupabase() {
     const port = await detect(54322);
@@ -24,6 +26,10 @@ export async function clearSupabaseData() {
     });
     await client.connect();
     await client.query("TRUNCATE auth.users CASCADE;");
+    await client.query("TRUNCATE public.billing_customers CASCADE;");
+    await client.query("TRUNCATE public.billing_products CASCADE;");
+    await client.query("TRUNCATE public.billing_subscriptions CASCADE;");
+    await client.query("TRUNCATE public.contacts CASCADE;");
 }
 
 
@@ -68,4 +74,12 @@ export async function createContact(user_id: string) {
     }
 
     return data;
+}
+
+export async function syncStripeProducts() {
+  const products = await stripe.products.list();
+
+  for (const product of products.data) {
+    await upsertProductRecord(product);
+  }
 }

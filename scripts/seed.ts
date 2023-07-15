@@ -1,10 +1,11 @@
-import { clearSupabaseData, createContact, createUser, startSupabase } from "./utils";
+import { clearSupabaseData, createContact, createUser, startSupabase, syncStripeProducts } from "./utils";
 
 async function seed() {
     try {
         await startSupabase()
         await clearSupabaseData()
         const user = await createUser({ email: "t@t.com", full_name: "Test User", password: "password" })
+        await syncStripeProducts();
 
         for (let i = 0; i < 5; i++) {
             await createContact(user.id)
