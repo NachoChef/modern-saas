@@ -2,6 +2,7 @@ import { stripeCustomerSchema } from "$lib/schemas";
 import type Stripe from "stripe";
 import { supabaseAdmin } from "./supabase-admin";
 import { stripe } from "./stripe";
+import { NODE_ENV } from "$env/static/private";
 
 export async function updateCustomerRecord(stripeCustomer: Stripe.Customer) {
 	const customer = stripeCustomerSchema.parse(stripeCustomer);
@@ -42,18 +43,24 @@ export async function getCustomerRecord(user_id: string) {
         throw userError || new Error('User not found');
     }
 
-    // test clock
-    const testClock = await stripe.testHelpers.testClocks.create({
-        frozen_time: Math.floor(Date.now() / 1000),
-    })
-
-    const stripeCustomer = await stripe.customers.create({
+    const createParams: Stripe.CustomerCreateParams = {
         email: userData.user.email,
         metadata: {
             user_id: user_id
         },
-        test_clock: testClock.id,
-    })
+    };
+
+    // development check
+    if (NODE_ENV && NODE_ENV === 'development') {
+        // add test clock
+        const testClock = await stripe.testHelpers.testClocks.create({
+            frozen_time: Math.floor(Date.now() / 1000),
+        })
+
+        createParams.test_clock = testClock.id
+    }
+
+    const stripeCustomer = await stripe.customers.create(createParams);
 
     if (!stripeCustomer) {
         throw new Error('Error creating customer in Stripe');
