@@ -24,7 +24,7 @@ async function seed() {
         await clearSupabaseData()
         for (const testUser of testUsers) {
             const user = await createUser(testUser)
-            for (let i = 0; i < 5; i++) {
+            for (let i = 0; i < 4; i++) {
                 await createContact(user.id)
             }
         }
